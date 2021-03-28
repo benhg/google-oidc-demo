@@ -8,8 +8,8 @@ app = Flask(__name__)
 
 # This information is obtained upon registration of a new GitHub OAuth
 # application here: https://github.com/settings/applications/new
-client_id = "ID"
-client_secret = "SECRET"
+client_id = "c88db0baa7de5b90edad"
+client_secret = "fe3e7bc522b011c457204cb5b8bbf06327edd1cb"
 authorization_base_url = 'https://github.com/login/oauth/authorize'
 token_url = 'https://github.com/login/oauth/access_token'
 
@@ -26,7 +26,7 @@ def demo():
 
     # State is used to prevent CSRF, keep this for later.
     session['oauth_state'] = state
-    return redirect(authorization_url)
+    return f"HERE IS A LINK: {authorization_url}"
 
 
 # Step 2: User authorization, this happens on the provider.
@@ -57,7 +57,8 @@ def profile():
     """Fetching a protected resource using an OAuth 2 token.
     """
     github = OAuth2Session(client_id, token=session['oauth_token'])
-    return jsonify(github.get('https://api.github.com/user').json())
+    dict_response = github.get('https://api.github.com/user').json()
+    return f"Name: {dict_response['name']}"
 
 
 if __name__ == "__main__":
