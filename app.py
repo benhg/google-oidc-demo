@@ -21,12 +21,16 @@ def demo():
     Redirect the user/resource owner to the OAuth provider (i.e. Github)
     using an URL with a few key OAuth parameters.
     """
-    github = OAuth2Session(client_id)
-    authorization_url, state = github.authorization_url(authorization_base_url)
+    token = session.get('oauth_token')
 
-    # State is used to prevent CSRF, keep this for later.
-    session['oauth_state'] = state
-    return f"HERE IS A LINK: {authorization_url}"
+    if not token:
+        github = OAuth2Session(client_id)
+        authorization_url, state = github.authorization_url(authorization_base_url)
+
+        # State is used to prevent CSRF, keep this for later.
+        session['oauth_state'] = state
+        
+    return redirect(authorization_url)
 
 
 # Step 2: User authorization, this happens on the provider.
@@ -58,7 +62,15 @@ def profile():
     """
     github = OAuth2Session(client_id, token=session['oauth_token'])
     dict_response = github.get('https://api.github.com/user').json()
-    return f"Name: {dict_response['name']}"
+    return f"User info: {dict_response}"
+
+@app.route("/profile2", methods=["GET"])
+def profile2():
+    """Fetching a protected resource using an OAuth 2 token.
+    """
+    github = OAuth2Session(client_id, token=session['oauth_token'])
+    dict_response = github.get('https://api.github.com/user').json()
+    return f"User info: {dict_response['name']}"
 
 
 if __name__ == "__main__":
